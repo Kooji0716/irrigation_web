@@ -116,6 +116,8 @@ body {
 
 .section p {
     color: #374151;
+    font-size: 20px;
+    line-height: 1.9;
 }
 
 .page-title {
@@ -366,5 +368,67 @@ footer {
         height: 44px;
         min-width: 44px;
         font-size: 20px;
+    }
+}
+
+/* =========================
+   Sklearn Model Page
+========================= */
+.model-summary-cards .card {
+    min-height: 190px;
+}
+
+.image-box {
+    width: 100%;
+    margin-top: 22px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.image-box img {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 14px;
+    display: block;
+}
+
+.confusion-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 26px;
+    margin-top: 26px;
+}
+
+.confusion-card {
+    background-color: #ffffff;
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    border-left: 6px solid #52b788;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.confusion-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
+}
+
+.confusion-card h3 {
+    color: #1b4332;
+    margin-bottom: 14px;
+    text-align: center;
+}
+
+.confusion-card img {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+}
+
+@media (max-width: 900px) {
+    .confusion-grid {
+        grid-template-columns: 1fr;
     }
 }

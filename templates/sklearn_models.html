@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>非神經網路模型比較 | 智慧灌溉需求預測系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">智慧灌溉需求預測系統</div>
+        <nav>
+            <a href="/">首頁</a>
+            <a href="/preprocessing">資料前處理</a>
+            <a href="/sklearn-models">非神經網路模型</a>
+            <a href="#">神經網路模型</a>
+            <a href="#">預測系統</a>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <section class="page-title">
+            <h1>非神經網路模型比較</h1>
+            <p>
+                本頁整合第二位同學訓練的非神經網路模型結果，
+                包含 Logistic Regression、Random Forest、XGBoost 與
+                HistGradientBoostingClassifier，並比較各模型在灌溉需求分類任務上的表現。
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>模型訓練說明</h2>
+            <p>
+                本部分使用清理後的 <strong>clean_train.csv</strong> 作為訓練資料，
+                將資料切分為訓練集與測試集後，分別訓練多種傳統機器學習模型。
+                原先亦嘗試使用 SVM，但由於資料量達 630,000 筆，訓練時間過長，
+                因此未納入最終比較。
+            </p>
+        </section>
+
+        <section class="cards model-summary-cards">
+            <div class="card">
+                <h3>Logistic Regression</h3>
+                <p>作為基準模型，適合用來觀察線性分類方法在本資料集上的表現。</p>
+            </div>
+
+            <div class="card">
+                <h3>Random Forest</h3>
+                <p>由多棵決策樹組成，透過多數決方式進行分類，適合處理表格型資料。</p>
+            </div>
+
+            <div class="card">
+                <h3>XGBoost</h3>
+                <p>以梯度提升樹為基礎，能逐步修正前面模型的錯誤。</p>
+            </div>
+
+            <div class="card">
+                <h3>HistGradientBoosting</h3>
+                <p>Scikit-learn 中的高效率梯度提升模型，適合處理大量資料。</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>模型評估結果</h2>
+            <p>
+                以下表格整理四種非神經網路模型的 Accuracy、Precision 與 Recall。
+                其中 Random Forest、XGBoost 與 HistGradientBoostingClassifier 的表現相當接近，
+                且明顯優於 Logistic Regression。
+            </p>
+
+            <table>
+                <tr>
+                    <th>模型</th>
+                    <th>Accuracy</th>
+                    <th>Precision</th>
+                    <th>Recall</th>
+                    <th>說明</th>
+                </tr>
+                <tr>
+                    <td>Logistic Regression</td>
+                    <td>0.8760</td>
+                    <td>0.8755</td>
+                    <td>0.8760</td>
+                    <td>基準模型，表現較低</td>
+                </tr>
+                <tr>
+                    <td>Random Forest</td>
+                    <td>0.9849</td>
+                    <td>0.9849</td>
+                    <td>0.9849</td>
+                    <td>表現最佳之一</td>
+                </tr>
+                <tr>
+                    <td>XGBoost</td>
+                    <td>0.9848</td>
+                    <td>0.9848</td>
+                    <td>0.9848</td>
+                    <td>與 Random Forest 接近</td>
+                </tr>
+                <tr>
+                    <td>HistGradientBoosting</td>
+                    <td>0.9848</td>
+                    <td>0.9848</td>
+                    <td>0.9848</td>
+                    <td>與 XGBoost 接近</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>整體模型比較圖</h2>
+            <p>
+                由模型比較圖可看出，三種樹狀模型的 Accuracy、Precision 與 Recall
+                皆接近 0.985，表示它們在本資料集上具有相當穩定且良好的分類能力。
+            </p>
+
+            <div class="image-box">
+                <img src="{{ url_for('static', filename='images/scikit_learn/model_compare.png') }}" alt="非神經網路模型比較圖">
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>樹狀模型分類邏輯示意</h2>
+            <p>
+                完整的 Random Forest 樹狀圖過於複雜，因此此處僅展示前三層節點。
+                這張圖可以用來說明樹狀模型如何根據不同特徵條件，逐步將資料分類為
+                Low、Medium 或 High。
+            </p>
+
+            <div class="image-box">
+                <img src="{{ url_for('static', filename='images/scikit_learn/forest_depth3.png') }}" alt="Random Forest 前三層樹狀圖">
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>混淆矩陣比較</h2>
+            <p>
+                混淆矩陣可用來觀察模型對 Low、Medium、High 三種類別的分類情況。
+                對角線代表預測正確的數量，非對角線則代表分類錯誤的情況。
+            </p>
+
+            <div class="confusion-grid">
+                <div class="confusion-card">
+                    <h3>Logistic Regression</h3>
+                    <img src="{{ url_for('static', filename='images/scikit_learn/confusion_logistic.png') }}" alt="Logistic Regression 混淆矩陣">
+                </div>
+
+                <div class="confusion-card">
+                    <h3>Random Forest</h3>
+                    <img src="{{ url_for('static', filename='images/scikit_learn/confusion_rf.png') }}" alt="Random Forest 混淆矩陣">
+                </div>
+
+                <div class="confusion-card">
+                    <h3>XGBoost</h3>
+                    <img src="{{ url_for('static', filename='images/scikit_learn/confusion_xgb.png') }}" alt="XGBoost 混淆矩陣">
+                </div>
+
+                <div class="confusion-card">
+                    <h3>HistGradientBoosting</h3>
+                    <img src="{{ url_for('static', filename='images/scikit_learn/confusion_hgbc.png') }}" alt="HistGradientBoosting 混淆矩陣">
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>結果小結</h2>
+            <p>
+                根據模型評估結果，Random Forest、XGBoost 與 HistGradientBoostingClassifier
+                的表現明顯優於 Logistic Regression。推測原因是灌溉需求與土壤、氣候、
+                作物類型等特徵之間可能存在非線性關係，而樹狀模型較能捕捉這類複雜規則。
+            </p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Scikit-learn / XGBoost Models | Non-Neural Network Model Comparison</p>
+    </footer>
+
+</body>
+</html>

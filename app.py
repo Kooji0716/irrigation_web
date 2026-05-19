@@ -13,5 +13,10 @@ def preprocessing():
     return render_template("preprocessing.html")
 
 
+@app.route("/sklearn-models")
+def sklearn_models():
+    return render_template("sklearn_models.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)
