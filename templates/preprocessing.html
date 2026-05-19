@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資料前處理 | 智慧灌溉需求預測系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">Smart Irrigation</div>
+        <nav>
+            <a href="/">首頁</a>
+            <a href="/preprocessing">資料前處理</a>
+            <a href="#">模型比較</a>
+            <a href="#">預測系統</a>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <section class="page-title">
+            <h1>資料前處理：從 train.csv 到 clean_train.csv</h1>
+            <p>
+                原始資料雖然包含完整的農業環境資訊，但其中有文字類別欄位、
+                不同尺度的數值欄位，以及不適合訓練的 id 欄位，因此需要先進行資料前處理。
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>原始資料概況</h2>
+
+            <table>
+                <tr>
+                    <th>項目</th>
+                    <th>內容</th>
+                </tr>
+                <tr>
+                    <td>資料檔案</td>
+                    <td>train.csv</td>
+                </tr>
+                <tr>
+                    <td>資料筆數</td>
+                    <td>630,000 筆</td>
+                </tr>
+                <tr>
+                    <td>原始欄位數</td>
+                    <td>21 欄</td>
+                </tr>
+                <tr>
+                    <td>目標欄位</td>
+                    <td>Irrigation_Need</td>
+                </tr>
+                <tr>
+                    <td>分類結果</td>
+                    <td>Low / Medium / High</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>為什麼需要資料前處理？</h2>
+            <p>
+                機器學習模型主要處理數值資料，但原始資料中包含
+                Soil_Type、Crop_Type、Season、Region 等文字類別欄位，
+                因此需要將文字轉換為數字。此外，像 Soil_pH 與 Rainfall_mm
+                的數值範圍差異較大，也需要透過標準化降低尺度差異對模型訓練的影響。
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>clean_train.csv 產生流程</h2>
+
+            <div class="vertical-flow">
+                <div class="step">1. 讀取原始 train.csv</div>
+                <div class="step">2. 刪除無預測意義的 id 欄位</div>
+                <div class="step">3. 將 Mulching_Used 轉為 0 / 1</div>
+                <div class="step">4. 將 Irrigation_Need 轉為 Low = 0、Medium = 1、High = 2</div>
+                <div class="step">5. 對 Soil_Type、Crop_Type、Season、Region 等欄位進行 One-Hot Encoding</div>
+                <div class="step">6. 對數值欄位進行 Standard Scaling</div>
+                <div class="step">7. 輸出整理後的 clean_train.csv</div>
+            </div>
+        </section>
+
+        <section class="cards">
+            <div class="card">
+                <h3>Label Encoding</h3>
+                <p>
+                    將目標欄位 Irrigation_Need 從 Low、Medium、High
+                    轉換成 0、1、2，讓模型能夠進行分類訓練。
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>One-Hot Encoding</h3>
+                <p>
+                    將沒有大小順序的類別欄位展開成 0 / 1 欄位，
+                    避免模型誤判類別之間存在大小關係。
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Standard Scaling</h3>
+                <p>
+                    將數值欄位標準化，使不同尺度的特徵能在較一致的範圍內參與模型訓練。
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Remove ID</h3>
+                <p>
+                    id 僅代表資料編號，沒有實際農業意義，因此在模型訓練前刪除。
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Data Preprocessing | clean_train.csv Generation</p>
+    </footer>
+
+</body>
+</html>

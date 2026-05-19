@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧灌溉需求預測系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">機器學習概論-智慧灌溉需求預測系統</div>
+        <nav>
+            <a href="/">首頁</a>
+            <a href="/preprocessing">資料前處理</a>
+            <a href="#">模型比較</a>
+            <a href="#">預測系統</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>智慧灌溉需求預測系統</h1>
+            <p>
+                本專題使用 Kaggle Playground Series 的 Predicting Irrigation Need 資料集，
+                根據土壤、氣候、作物與灌溉條件，預測農地灌溉需求等級。
+            </p>
+            <a href="/preprocessing" class="btn">了解資料前處理</a>
+        </div>
+    </section>
+
+    <main class="container">
+
+        <section class="section">
+            <h2>專題目標</h2>
+            <p>
+                本系統目標是建立一個機器學習模型，根據農業環境資料預測
+                <strong>Irrigation_Need</strong>，並將結果分為
+                <strong>Low</strong>、<strong>Medium</strong>、<strong>High</strong> 三種類別。
+            </p>
+        </section>
+
+        <section class="cards">
+            <div class="card">
+                <h3>Dataset</h3>
+                <p>Predicting Irrigation Need</p>
+            </div>
+
+            <div class="card">
+                <h3>Task</h3>
+                <p>多類別分類問題</p>
+            </div>
+
+            <div class="card">
+                <h3>Target</h3>
+                <p>Irrigation_Need</p>
+            </div>
+
+            <div class="card">
+                <h3>Classes</h3>
+                <p>Low / Medium / High</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>系統流程</h2>
+
+            <div class="flow">
+                <div class="flow-box">原始資料<br>train.csv</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">資料前處理</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">clean_train.csv</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">模型訓練</div>
+                <div class="arrow">→</div>
+                <div class="flow-box">預測灌溉需求</div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Machine Learning Final Project | Smart Irrigation Need Prediction</p>
+        <p>機器學習概論-第一組<p>
+    </footer>
+
+</body>
+</html>
