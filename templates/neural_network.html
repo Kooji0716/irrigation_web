@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神經網路模型 | 智慧灌溉需求預測系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">Smart Irrigation</div>
+        <nav>
+            <a href="/">首頁</a>
+            <a href="/preprocessing">資料前處理</a>
+            <a href="/sklearn-models">非神經網路模型</a>
+            <a href="/neural-network">神經網路模型</a>
+            <a href="#">預測系統</a>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <section class="page-title">
+            <h1>Keras / TensorFlow 神經網路模型</h1>
+            <p>
+                本頁整合第三位同學使用 Keras / TensorFlow 建立的多分類神經網路模型結果。
+                模型以 clean_train.csv 作為資料來源，根據 42 個輸入特徵預測灌溉需求類別。
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>專案目標</h2>
+            <p>
+                本部分主要使用 <strong>Keras / TensorFlow</strong> 建立灌溉需求
+                <strong>Irrigation_Need</strong> 的多分類模型。分類目標共有三類：
+                <strong>0</strong>、<strong>1</strong>、<strong>2</strong>，
+                分別代表 Low、Medium、High 三種灌溉需求。
+            </p>
+        </section>
+
+        <section class="cards model-summary-cards">
+            <div class="card">
+                <h3>資料來源</h3>
+                <p>使用清洗完成後的 clean_train.csv。</p>
+            </div>
+
+            <div class="card">
+                <h3>資料筆數</h3>
+                <p>共 630,000 筆資料。</p>
+            </div>
+
+            <div class="card">
+                <h3>輸入特徵</h3>
+                <p>共 42 個輸入特徵。</p>
+            </div>
+
+            <div class="card">
+                <h3>分類目標</h3>
+                <p>Irrigation_Need：0 / 1 / 2。</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>模型架構</h2>
+            <p>
+                本次使用的是表格資料常見的多層感知器
+                <strong>MLP, Multi-Layer Perceptron</strong>。
+                模型由多層 Dense layer 組成，並加入 BatchNormalization、Dropout、
+                L2 Regularization 等方法，以提升訓練穩定性並降低過擬合風險。
+            </p>
+
+            <div class="architecture-box">
+                <div class="architecture-step">Input：42 個特徵</div>
+                <div class="architecture-arrow">↓</div>
+                <div class="architecture-step">BatchNormalization</div>
+                <div class="architecture-arrow">↓</div>
+                <div class="architecture-step">Dense(128, ReLU)</div>
+                <div class="architecture-arrow">↓</div>
+                <div class="architecture-step">Dropout(0.30)</div>
+                <div class="architecture-arrow">↓</div>
+                <div class="architecture-step">Dense(64, ReLU)</div>
+                <div class="architecture-arrow">↓</div>
+                <div class="architecture-step">BatchNormalization + Dropout(0.20)</div>
+                <div class="architecture-arrow">↓</div>
+                <div class="architecture-step">Dense(32, ReLU)</div>
+                <div class="architecture-arrow">↓</div>
+                <div class="architecture-step output-step">Dense(3, Softmax)</div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>訓練技巧</h2>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <h3>BatchNormalization</h3>
+                    <p>讓每層輸入分布更穩定，使模型訓練過程更平順。</p>
+                </div>
+
+                <div class="tech-card">
+                    <h3>Dropout</h3>
+                    <p>訓練時隨機關閉部分神經元，降低模型過度記住訓練資料的風險。</p>
+                </div>
+
+                <div class="tech-card">
+                    <h3>L2 Regularization</h3>
+                    <p>限制權重過大，避免模型過度複雜化。</p>
+                </div>
+
+                <div class="tech-card">
+                    <h3>EarlyStopping</h3>
+                    <p>當驗證集表現不再進步時停止訓練，避免過擬合。</p>
+                </div>
+
+                <div class="tech-card">
+                    <h3>ReduceLROnPlateau</h3>
+                    <p>當驗證集 loss 停滯時降低 learning rate，使後期訓練更穩定。</p>
+                </div>
+
+                <div class="tech-card">
+                    <h3>class_weight</h3>
+                    <p>處理類別不平衡問題，讓模型更重視樣本數較少的類別。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>資料切分方式</h2>
+            <p>
+                本次資料切分為訓練集、驗證集與測試集。訓練集用於模型學習，
+                驗證集用於訓練過程中觀察模型表現，測試集則用於最後評估模型效果。
+            </p>
+
+            <table>
+                <tr>
+                    <th>資料集</th>
+                    <th>筆數</th>
+                    <th>用途</th>
+                </tr>
+                <tr>
+                    <td>Train</td>
+                    <td>455,175</td>
+                    <td>模型實際學習資料</td>
+                </tr>
+                <tr>
+                    <td>Validation</td>
+                    <td>80,325</td>
+                    <td>訓練過程中檢查模型表現</td>
+                </tr>
+                <tr>
+                    <td>Test</td>
+                    <td>94,500</td>
+                    <td>最後評估模型表現</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>模型評估結果</h2>
+            <p>
+                神經網路模型在測試集上具有良好的分類表現。除了整體 Accuracy 外，
+                本研究也觀察 Balanced Accuracy，以確認模型在類別不平衡情況下是否仍能維持穩定辨識能力。
+            </p>
+
+            <table>
+                <tr>
+                    <th>指標</th>
+                    <th>結果</th>
+                    <th>說明</th>
+                </tr>
+                <tr>
+                    <td>Best Validation Accuracy</td>
+                    <td>約 0.9775</td>
+                    <td>訓練過程中驗證集達到的最佳準確率</td>
+                </tr>
+                <tr>
+                    <td>Test Accuracy</td>
+                    <td>約 0.9772</td>
+                    <td>測試集整體預測正確率</td>
+                </tr>
+                <tr>
+                    <td>Test Balanced Accuracy</td>
+                    <td>約 0.9615</td>
+                    <td>各類別召回率平均，較能反映類別不平衡下的表現</td>
+                </tr>
+            </table>
+        </section>
+
+        <section class="section">
+            <h2>訓練過程：Loss 與 Accuracy</h2>
+            <p>
+                這張圖用來觀察模型是否正常收斂。左圖為 Loss，右圖為 Accuracy。
+                可以看到模型在訓練過程中逐漸穩定，且訓練集與驗證集表現沒有出現明顯過大落差。
+            </p>
+
+            <div class="image-box">
+                <img src="{{ url_for('static', filename='images/tensorflow/training_history.png') }}" alt="Training History">
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>類別分布</h2>
+            <p>
+                原始資料中 Low、Medium、High 三類樣本數差異明顯，其中 High 類別數量最少。
+                因此本次神經網路訓練加入 class_weight，讓模型在訓練時更重視少數類別。
+            </p>
+
+            <div class="image-box medium-image">
+                <img src="{{ url_for('static', filename='images/tensorflow/class_distribution.png') }}" alt="Class Distribution">
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>分類結果：混淆矩陣</h2>
+            <p>
+                混淆矩陣可用來觀察模型實際預測情況。對角線代表預測正確的數量，
+                非對角線則代表分類錯誤的情況。
+            </p>
+
+            <div class="confusion-grid">
+                <div class="confusion-card">
+                    <h3>Confusion Matrix</h3>
+                    <img src="{{ url_for('static', filename='images/tensorflow/confusion_matrix.png') }}" alt="Confusion Matrix">
+                </div>
+
+                <div class="confusion-card">
+                    <h3>Normalized Confusion Matrix</h3>
+                    <img src="{{ url_for('static', filename='images/tensorflow/confusion_matrix_normalized.png') }}" alt="Normalized Confusion Matrix">
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>各類別 Precision / Recall / F1-score</h2>
+            <p>
+                此圖呈現每個類別的 Precision、Recall 與 F1-score。
+                可以看出模型對類別 0 與類別 1 的辨識表現較佳，
+                類別 2 由於資料量較少，相對較具挑戰性，但仍維持不錯的 Recall。
+            </p>
+
+            <div class="image-box">
+                <img src="{{ url_for('static', filename='images/tensorflow/classification_report_bars.png') }}" alt="Classification Report Bars">
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>真實類別與預測類別分布比較</h2>
+            <p>
+                此圖比較測試集真實類別分布與模型預測出的類別分布。
+                若兩者分布接近，表示模型沒有明顯偏向某一類別。
+            </p>
+
+            <div class="image-box">
+                <img src="{{ url_for('static', filename='images/tensorflow/prediction_distribution.png') }}" alt="Prediction Distribution">
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Learning Rate 變化</h2>
+            <p>
+                此圖記錄訓練過程中的 learning rate 變化。
+                當驗證集 loss 停滯時，ReduceLROnPlateau 會降低 learning rate，
+                使模型在後期能以較小步伐進行微調。
+            </p>
+
+            <div class="image-box">
+                <img src="{{ url_for('static', filename='images/tensorflow/learning_rate_history.png') }}" alt="Learning Rate History">
+            </div>
+        </section>
+
+        <section class="section conclusion-section">
+            <h2>結果小結</h2>
+            <p>
+                本次成功使用 Keras / TensorFlow 建立灌溉需求多分類神經網路模型。
+                模型在測試集上達到約 97.72% 的 Accuracy，以及約 96.15% 的 Balanced Accuracy。
+                這代表模型不只整體預測正確率高，在考慮類別不平衡的情況下，也具有良好的辨識能力。
+            </p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Keras / TensorFlow Neural Network | Irrigation Need Classification</p>
+    </footer>
+
+</body>
+</html>

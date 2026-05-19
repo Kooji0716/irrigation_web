@@ -18,5 +18,10 @@ def sklearn_models():
     return render_template("sklearn_models.html")
 
 
+@app.route("/neural-network")
+def neural_network():
+    return render_template("neural_network.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)

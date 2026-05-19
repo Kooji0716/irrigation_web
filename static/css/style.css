@@ -168,27 +168,33 @@ body {
 .flow {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 20px;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    margin-top: 24px;
+    overflow-x: auto;
 }
 
 .flow-box {
     background-color: #e9f7ef;
     color: #1b4332;
-    padding: 18px 22px;
+    padding: 18px 20px;
     border-radius: 14px;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1.5;
     text-align: center;
     min-width: 140px;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.04);
+    flex-shrink: 0;
 }
 
 .arrow {
-    font-size: 26px;
+    font-size: 24px;
     color: #2f6f4e;
-    font-weight: bold;
+    font-weight: 700;
+    flex-shrink: 0;
 }
-
 /* =========================
    Vertical Flow
 ========================= */
@@ -430,5 +436,98 @@ footer {
 @media (max-width: 900px) {
     .confusion-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   Neural Network Page
+========================= */
+.architecture-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 26px;
+}
+
+.architecture-step {
+    width: 75%; 
+    background-color: #e9f7ef;
+    color: #1b4332;
+    padding: 18px 24px;
+    border-radius: 14px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1.6;
+    border-left: 6px solid #52b788;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.04);
+}
+
+.output-step {
+    background-color: #d8f3dc;
+    border-left-color: #2f6f4e;
+}
+
+.architecture-arrow {
+    color: #2f6f4e;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-top: 24px;
+}
+
+.tech-card {
+    background-color: #ffffff;
+    border-radius: 18px;
+    padding: 24px;
+    border-left: 6px solid #52b788;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tech-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
+}
+
+.tech-card h3 {
+    color: #1b4332;
+    margin-bottom: 14px;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.tech-card p {
+    color: #374151;
+}
+
+.medium-image {
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.conclusion-section p {
+    font-size: 18px;
+    line-height: 1.9;
+}
+
+.conclusion-section h2 {
+    font-size: 28px;
+}
+
+@media (max-width: 900px) {
+    .tech-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .architecture-step {
+        width: 100%;
     }
 }
