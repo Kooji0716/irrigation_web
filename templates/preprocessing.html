@@ -9,7 +9,7 @@
 <body>
 
     <header class="navbar">
-        <div class="logo">Smart Irrigation</div>
+        <div class="logo">智慧灌溉需求預測系統</div>
         <nav>
             <a href="/">首頁</a>
             <a href="/preprocessing">資料前處理</a>
@@ -62,57 +62,82 @@
         <section class="section">
             <h2>為什麼需要資料前處理？</h2>
             <p>
-                機器學習模型主要處理數值資料，但原始資料中包含
+                機器學習模型主要處理數值資料，要先檢查原始資料是否有缺失，同時資料中包含
                 Soil_Type、Crop_Type、Season、Region 等文字類別欄位，
-                因此需要將文字轉換為數字。此外，像 Soil_pH 與 Rainfall_mm
+                需要將文字轉換為數字。此外，像 Soil_pH 與 Rainfall_mm
                 的數值範圍差異較大，也需要透過標準化降低尺度差異對模型訓練的影響。
             </p>
         </section>
 
         <section class="section">
             <h2>clean_train.csv 產生流程</h2>
-
-            <div class="vertical-flow">
-                <div class="step">1. 讀取原始 train.csv</div>
-                <div class="step">2. 刪除無預測意義的 id 欄位</div>
-                <div class="step">3. 將 Mulching_Used 轉為 0 / 1</div>
-                <div class="step">4. 將 Irrigation_Need 轉為 Low = 0、Medium = 1、High = 2</div>
-                <div class="step">5. 對 Soil_Type、Crop_Type、Season、Region 等欄位進行 One-Hot Encoding</div>
-                <div class="step">6. 對數值欄位進行 Standard Scaling</div>
-                <div class="step">7. 輸出整理後的 clean_train.csv</div>
-            </div>
+            <p>
+                為了讓原始資料能被機器學習模型正確讀取與訓練，
+                我們將 train.csv 進行資料前處理，並輸出整理後的 clean_train.csv。
+                主要處理流程如下：
+            </p>
         </section>
 
-        <section class="cards">
-            <div class="card">
-                <h3>Label Encoding</h3>
-                <p>
-                    將目標欄位 Irrigation_Need 從 Low、Medium、High
-                    轉換成 0、1、2，讓模型能夠進行分類訓練。
-                </p>
+        <section class="process-list">
+
+            <div class="process-card">
+                <div class="process-number">1</div>
+                <div class="process-content">
+                    <h3>標籤數值化 <span>Label Encoding</span></h3>
+                    <p><strong>欄位：</strong>Irrigation_Need</p>
+                    <p><strong>改動：</strong>把 Low 轉成 0，Medium 轉成 1，High 轉成 2。</p>
+                    <p><strong>原因：</strong>灌溉需求具有強弱程度差異，數值化後能讓模型更容易處理分類目標。</p>
+                </div>
             </div>
 
-            <div class="card">
-                <h3>One-Hot Encoding</h3>
-                <p>
-                    將沒有大小順序的類別欄位展開成 0 / 1 欄位，
-                    避免模型誤判類別之間存在大小關係。
-                </p>
+            <div class="process-card">
+                <div class="process-number">2</div>
+                <div class="process-content">
+                    <h3>欄位展開 <span>One-Hot Encoding</span></h3>
+                    <p><strong>欄位：</strong>Soil_Type、Crop_Type、Season、Region 等類別欄位。</p>
+                    <p><strong>改動：</strong>將原本單一類別欄位拆成多個 0 / 1 獨立欄位。</p>
+                    <p><strong>原因：</strong>這些類別本身沒有大小關係，例如黏土不一定比砂土「大」，因此使用 One-Hot Encoding 可避免模型誤判類別順序。</p>
+                </div>
             </div>
 
-            <div class="card">
-                <h3>Standard Scaling</h3>
-                <p>
-                    將數值欄位標準化，使不同尺度的特徵能在較一致的範圍內參與模型訓練。
-                </p>
+            <div class="process-card">
+                <div class="process-number">3</div>
+                <div class="process-content">
+                    <h3>特徵縮放 <span>Standard Scaling</span></h3>
+                    <p><strong>欄位：</strong>所有數值特徵，例如 pH、溫度、雨量、濕度等。</p>
+                    <p><strong>改動：</strong>將不同數值欄位個別標準化，使資料尺度較一致。</p>
+                    <p><strong>原因：</strong>避免雨量這類數值範圍較大的欄位，在模型計算時完全蓋過 pH 值等數值較小欄位的影響。</p>
+                </div>
             </div>
 
-            <div class="card">
-                <h3>Remove ID</h3>
-                <p>
-                    id 僅代表資料編號，沒有實際農業意義，因此在模型訓練前刪除。
-                </p>
+            <div class="process-card">
+                <div class="process-number">4</div>
+                <div class="process-content">
+                    <h3>格式統一</h3>
+                    <p><strong>改動：</strong>將所有 True / False 格式統一轉換為 1 / 0。</p>
+                    <p><strong>原因：</strong>統一資料格式後，模型能以數值方式進行計算，避免不同資料型態造成訓練錯誤。</p>
+                </div>
             </div>
+
+            <div class="process-card">
+                <div class="process-number">5</div>
+                <div class="process-content">
+                    <h3>刪除用不到的 id 欄位</h3>
+                    <p><strong>欄位：</strong>id</p>
+                    <p><strong>改動：</strong>將 id 欄位從訓練資料中刪除。</p>
+                    <p><strong>原因：</strong>id 只代表資料編號，沒有實際農業意義。若放入模型，可能讓模型學到無意義的規律。</p>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="section">
+            <h2>前處理後的結果</h2>
+            <p>
+                經過上述處理後，原始資料中的文字欄位、布林值與不同尺度的數值欄位，
+                會被轉換成機器學習模型可使用的數值格式。最後輸出的
+                <strong>clean_train.csv</strong> 將作為後續非神經網路模型與 Keras / TensorFlow 神經網路模型的訓練資料。
+            </p>
         </section>
 
     </main>

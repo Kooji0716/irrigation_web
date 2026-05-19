@@ -1,3 +1,6 @@
+/* =========================
+   Global Setting
+========================= */
 * {
     margin: 0;
     padding: 0;
@@ -11,6 +14,9 @@ body {
     line-height: 1.7;
 }
 
+/* =========================
+   Navbar
+========================= */
 .navbar {
     width: 100%;
     padding: 18px 8%;
@@ -35,12 +41,16 @@ body {
     text-decoration: none;
     color: #374151;
     font-weight: 500;
+    transition: color 0.2s ease;
 }
 
 .navbar nav a:hover {
     color: #2f6f4e;
 }
 
+/* =========================
+   Hero Section
+========================= */
 .hero {
     min-height: 420px;
     background: linear-gradient(135deg, #dff5e3, #f6fbf7);
@@ -73,12 +83,17 @@ body {
     text-decoration: none;
     border-radius: 10px;
     font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .btn:hover {
     background-color: #24583e;
+    transform: translateY(-2px);
 }
 
+/* =========================
+   Layout
+========================= */
 .container {
     width: 84%;
     max-width: 1180px;
@@ -99,6 +114,10 @@ body {
     margin-bottom: 18px;
 }
 
+.section p {
+    color: #374151;
+}
+
 .page-title {
     margin-bottom: 32px;
 }
@@ -112,6 +131,9 @@ body {
     color: #4b5563;
 }
 
+/* =========================
+   Cards
+========================= */
 .cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -125,6 +147,12 @@ body {
     padding: 26px;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
     border-left: 6px solid #52b788;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
 }
 
 .card h3 {
@@ -132,6 +160,9 @@ body {
     margin-bottom: 12px;
 }
 
+/* =========================
+   Horizontal Flow
+========================= */
 .flow {
     display: flex;
     align-items: center;
@@ -156,6 +187,9 @@ body {
     font-weight: bold;
 }
 
+/* =========================
+   Vertical Flow
+========================= */
 .vertical-flow {
     display: flex;
     flex-direction: column;
@@ -170,10 +204,16 @@ body {
     font-weight: 500;
 }
 
+/* =========================
+   Table
+========================= */
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 16px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
 }
 
 table th,
@@ -188,6 +228,71 @@ table th {
     color: #1b4332;
 }
 
+table tr:hover td {
+    background-color: #f8fbf8;
+}
+
+/* =========================
+   Preprocessing Process Cards
+========================= */
+.process-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    margin-bottom: 30px;
+}
+
+.process-card {
+    display: flex;
+    gap: 22px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    padding: 26px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    border-left: 6px solid #52b788;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.process-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.08);
+}
+
+.process-number {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    background-color: #2f6f4e;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.process-content h3 {
+    color: #1b4332;
+    margin-bottom: 12px;
+    font-size: 22px;
+}
+
+.process-content h3 span {
+    font-size: 15px;
+    color: #6b7280;
+    font-weight: 500;
+    margin-left: 8px;
+}
+
+.process-content p {
+    margin-bottom: 8px;
+    color: #374151;
+}
+
+/* =========================
+   Footer
+========================= */
 footer {
     text-align: center;
     padding: 24px;
@@ -196,22 +301,50 @@ footer {
     margin-top: 60px;
 }
 
+/* =========================
+   Responsive Design
+========================= */
 @media (max-width: 768px) {
     .navbar {
         flex-direction: column;
         gap: 14px;
     }
 
+    .navbar nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
     .navbar nav a {
         margin: 0 8px;
+    }
+
+    .hero {
+        padding: 50px 6%;
+        min-height: 360px;
     }
 
     .hero h1 {
         font-size: 34px;
     }
 
+    .hero p {
+        font-size: 16px;
+    }
+
     .container {
         width: 92%;
+        margin: 36px auto;
+    }
+
+    .section {
+        padding: 24px;
+    }
+
+    .page-title h1 {
+        font-size: 28px;
     }
 
     .flow {
@@ -222,5 +355,16 @@ footer {
     .arrow {
         transform: rotate(90deg);
         text-align: center;
+    }
+
+    .process-card {
+        flex-direction: column;
+    }
+
+    .process-number {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        font-size: 20px;
     }
 }
