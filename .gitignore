@@ -216,3 +216,22 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+# Large data files
+data/*.csv
+
+# Optional backups
+data/*old*.csv
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db

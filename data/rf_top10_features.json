@@ -1,0 +1,12 @@
+[
+    "Soil_Moisture",
+    "Temperature_C",
+    "Rainfall_mm",
+    "Wind_Speed_kmh",
+    "Mulching_Used",
+    "Previous_Irrigation_mm",
+    "Crop_Growth_Stage_Flowering",
+    "Crop_Growth_Stage_Harvest",
+    "Crop_Growth_Stage_Sowing",
+    "Crop_Growth_Stage_Vegetative"
+]
