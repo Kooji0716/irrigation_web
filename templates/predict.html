@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>預測系統 | 智慧灌溉需求預測系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">Smart Irrigation</div>
+        <nav>
+             <a href="/">首頁</a>
+            <a href="/preprocessing">資料前處理</a>
+            <a href="/sklearn-models">非神經網路模型</a>
+            <a href="/neural-network">神經網路模型</a>
+            <a href="/predict">預測系統</a>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <section class="page-title">
+            <h1>智慧灌溉需求預測</h1>
+            <p>
+                請輸入土壤、氣候、作物與灌溉條件，系統會依照選擇的模型，
+                預測該農地的灌溉需求等級。
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>快速載入範例資料</h2>
+            <p>
+                若不想手動輸入所有參數，可以先選擇一組範例情境，
+                系統會自動填入對應的農業條件。
+            </p>
+
+            <div class="example-control">
+                <select id="exampleSelect">
+                    <option value="">請選擇範例情境</option>
+                    <option value="dry">乾燥高溫情境</option>
+                    <option value="normal">一般中等情境</option>
+                    <option value="wet">濕潤低需求情境</option>
+                </select>
+
+                <button type="button" class="btn" onclick="loadExample()">載入範例資料</button>
+            </div>
+        </section>
+
+        <form action="/predict" method="POST" class="predict-form">
+
+            <section class="form-section">
+                <h2>土壤條件</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Soil Type</label>
+                        <select name="Soil_Type" id="Soil_Type" required>
+                            <option value="Clay">Clay</option>
+                            <option value="Loamy">Loamy</option>
+                            <option value="Sandy">Sandy</option>
+                            <option value="Silt">Silt</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Soil pH</label>
+                        <input type="number" step="0.01" name="Soil_pH" id="Soil_pH" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Soil Moisture</label>
+                        <input type="number" step="0.01" name="Soil_Moisture" id="Soil_Moisture" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Organic Carbon</label>
+                        <input type="number" step="0.01" name="Organic_Carbon" id="Organic_Carbon" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Electrical Conductivity</label>
+                        <input type="number" step="0.01" name="Electrical_Conductivity" id="Electrical_Conductivity" required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2>氣候條件</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Temperature C</label>
+                        <input type="number" step="0.01" name="Temperature_C" id="Temperature_C" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Humidity</label>
+                        <input type="number" step="0.01" name="Humidity" id="Humidity" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Rainfall mm</label>
+                        <input type="number" step="0.01" name="Rainfall_mm" id="Rainfall_mm" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sunlight Hours</label>
+                        <input type="number" step="0.01" name="Sunlight_Hours" id="Sunlight_Hours" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Wind Speed kmh</label>
+                        <input type="number" step="0.01" name="Wind_Speed_kmh" id="Wind_Speed_kmh" required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2>作物與季節條件</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Crop Type</label>
+                        <select name="Crop_Type" id="Crop_Type" required>
+                            <option value="Cotton">Cotton</option>
+                            <option value="Maize">Maize</option>
+                            <option value="Potato">Potato</option>
+                            <option value="Rice">Rice</option>
+                            <option value="Sugarcane">Sugarcane</option>
+                            <option value="Wheat">Wheat</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Crop Growth Stage</label>
+                        <select name="Crop_Growth_Stage" id="Crop_Growth_Stage" required>
+                            <option value="Flowering">Flowering</option>
+                            <option value="Harvest">Harvest</option>
+                            <option value="Sowing">Sowing</option>
+                            <option value="Vegetative">Vegetative</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Season</label>
+                        <select name="Season" id="Season" required>
+                            <option value="Kharif">Kharif</option>
+                            <option value="Rabi">Rabi</option>
+                            <option value="Zaid">Zaid</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Region</label>
+                        <select name="Region" id="Region" required>
+                            <option value="Central">Central</option>
+                            <option value="East">East</option>
+                            <option value="North">North</option>
+                            <option value="South">South</option>
+                            <option value="West">West</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2>灌溉與農地條件</h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Irrigation Type</label>
+                        <select name="Irrigation_Type" id="Irrigation_Type" required>
+                            <option value="Canal">Canal</option>
+                            <option value="Drip">Drip</option>
+                            <option value="Rainfed">Rainfed</option>
+                            <option value="Sprinkler">Sprinkler</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Water Source</label>
+                        <select name="Water_Source" id="Water_Source" required>
+                            <option value="Groundwater">Groundwater</option>
+                            <option value="Rainwater">Rainwater</option>
+                            <option value="Reservoir">Reservoir</option>
+                            <option value="River">River</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Field Area hectare</label>
+                        <input type="number" step="0.01" name="Field_Area_hectare" id="Field_Area_hectare" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Mulching Used</label>
+                        <select name="Mulching_Used" id="Mulching_Used" required>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Previous Irrigation mm</label>
+                        <input type="number" step="0.01" name="Previous_Irrigation_mm" id="Previous_Irrigation_mm" required>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <h2>模型選擇</h2>
+
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>請選擇預測模型</label>
+                        <select name="model_type" id="model_type" required>
+                            <option value="rf">非神經網路模型：Random Forest New</option>
+                            <option value="nn">神經網路模型：Keras / TensorFlow MLP</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="predict-btn">開始預測</button>
+            </section>
+
+            {% if result %}
+            <section class="result-card">
+                <h2>預測結果</h2>
+                <p class="result-label">{{ result }}</p>
+                <p>{{ explanation }}</p>
+            </section>
+            {% endif %}
+
+        </form>
+
+    </main>
+
+    <footer>
+        <p>Interactive Prediction System | Smart Irrigation Need Prediction</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/predict.js') }}"></script>
+</body>
+</html>
