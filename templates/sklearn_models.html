@@ -9,7 +9,7 @@
 <body>
 
     <header class="navbar">
-        <div class="logo">智慧灌溉需求預測系統</div>
+        <div class="logo">Smart Irrigation</div>
         <nav>
             <a href="/">首頁</a>
             <a href="/preprocessing">資料前處理</a>
@@ -22,11 +22,10 @@
     <main class="container">
 
         <section class="page-title">
-            <h1>非神經網路模型比較</h1>
+            <h1>非神經網路模型比較與特徵篩選測試</h1>
             <p>
-                本頁整合了非神經網路模型結果，
-                包含 Logistic Regression、Random Forest、XGBoost 與
-                HistGradientBoostingClassifier，並比較各模型在灌溉需求分類任務上的表現。
+                本頁整合第二位同學使用 Scikit-learn 與 XGBoost 訓練的非神經網路模型結果，
+                並加入 Accuracy、Precision、Recall 與 Balanced Accuracy 作為模型評估指標。
             </p>
         </section>
 
@@ -34,77 +33,100 @@
             <h2>模型訓練說明</h2>
             <p>
                 本部分使用清理後的 <strong>clean_train.csv</strong> 作為訓練資料，
-                將資料切分為訓練集與測試集後，分別訓練多種傳統機器學習模型。
-                原先亦嘗試使用 SVM，但由於資料量達 630,000 筆，訓練時間過長，
-                因此未納入最終比較。
+                並將資料切分為 60% 訓練集與 40% 測試集。
+                使用的模型包含 Logistic Regression、Random Forest、XGBoost 與
+                HistGradientBoostingClassifier。原先也嘗試加入 SVM，
+                但由於資料量過大，訓練時間過長，因此最後未納入比較。
             </p>
         </section>
 
         <section class="cards model-summary-cards">
             <div class="card">
                 <h3>Logistic Regression</h3>
-                <p>作為基準模型，適合用來觀察線性分類方法在本資料集上的表現。</p>
+                <p>線性分類基準模型，用來觀察較簡單模型在本資料集上的表現。</p>
             </div>
 
             <div class="card">
                 <h3>Random Forest</h3>
-                <p>由多棵決策樹組成，透過多數決方式進行分類，適合處理表格型資料。</p>
+                <p>由多棵決策樹組成，能處理非線性關係，也是本次特徵篩選後表現最佳的模型。</p>
             </div>
 
             <div class="card">
                 <h3>XGBoost</h3>
-                <p>以梯度提升樹為基礎，能逐步修正前面模型的錯誤。</p>
+                <p>梯度提升樹模型，能逐步修正前一輪模型的錯誤，常用於表格資料競賽。</p>
             </div>
 
             <div class="card">
                 <h3>HistGradientBoosting</h3>
-                <p>Scikit-learn 中的高效率梯度提升模型，適合處理大量資料。</p>
+                <p>Scikit-learn 中的高效率梯度提升模型，適合處理大量表格資料。</p>
             </div>
         </section>
 
         <section class="section">
-            <h2>模型評估結果</h2>
+            <h2>特徵篩選測試</h2>
             <p>
-                以下表格整理四種非神經網路模型的 Accuracy、Precision 與 Recall。
-                其中 Random Forest、XGBoost 與 HistGradientBoostingClassifier 的表現相當接近，
-                且明顯優於 Logistic Regression。
+                除了使用完整特徵進行訓練外，本研究也測試不同特徵篩選方式對模型表現的影響。
+                <strong>測試一</strong>為刪除與目標欄位相關性接近 0 的
+                <strong>Soil_pH</strong> 與 <strong>Sunlight_Hours</strong>；
+                <strong>測試二</strong>則是只保留前十個相關性較高的欄位進行訓練。
+            </p>
+            <p>
+                結果顯示，Logistic Regression 在刪除欄位或只保留前十欄位後表現皆略微下降；
+                Random Forest 則在只保留前十個相關欄位後表現提升，
+                表示部分低影響力特徵可能會干擾 Random Forest 的分類判斷。
+                對 XGBoost 與 HistGradientBoostingClassifier 而言，刪除低相關欄位後表現並未提升，
+                因此後續未再進行測試二。
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>最終模型評估結果</h2>
+            <p>
+                由於本資料集存在類別不平衡問題，因此除了 Accuracy 之外，
+                本研究也加入 <strong>Balanced Accuracy</strong> 作為比較指標。
+                Balanced Accuracy 會平均觀察每個類別的辨識率，較能反映模型是否只偏向多數類別。
             </p>
 
             <table>
                 <tr>
                     <th>模型</th>
+                    <th>最終版本</th>
                     <th>Accuracy</th>
+                    <th>Balanced Accuracy</th>
                     <th>Precision</th>
                     <th>Recall</th>
-                    <th>說明</th>
                 </tr>
                 <tr>
                     <td>Logistic Regression</td>
+                    <td>完整特徵</td>
                     <td>0.8760</td>
+                    <td>0.7751</td>
                     <td>0.8755</td>
                     <td>0.8760</td>
-                    <td>基準模型，表現較低</td>
                 </tr>
                 <tr>
                     <td>Random Forest</td>
-                    <td>0.9849</td>
-                    <td>0.9849</td>
-                    <td>0.9849</td>
-                    <td>表現最佳之一</td>
+                    <td>前十相關欄位</td>
+                    <td>0.9858</td>
+                    <td>0.9611</td>
+                    <td>0.9857</td>
+                    <td>0.9858</td>
                 </tr>
                 <tr>
                     <td>XGBoost</td>
+                    <td>完整特徵</td>
+                    <td>0.9848</td>
+                    <td>0.9610</td>
                     <td>0.9848</td>
                     <td>0.9848</td>
-                    <td>0.9848</td>
-                    <td>與 Random Forest 接近</td>
                 </tr>
                 <tr>
                     <td>HistGradientBoosting</td>
+                    <td>完整特徵</td>
+                    <td>0.9848</td>
+                    <td>0.9607</td>
                     <td>0.9848</td>
                     <td>0.9848</td>
-                    <td>0.9848</td>
-                    <td>與 XGBoost 接近</td>
                 </tr>
             </table>
         </section>
@@ -112,30 +134,90 @@
         <section class="section">
             <h2>整體模型比較圖</h2>
             <p>
-                由模型比較圖可看出，三種樹狀模型的 Accuracy、Precision 與 Recall
-                皆接近 0.985，表示它們在本資料集上具有相當穩定且良好的分類能力。
+                此圖比較四個模型的 Accuracy、Precision 與 Recall。
+                可以看出 Random Forest、XGBoost 與 HistGradientBoostingClassifier
+                的整體表現皆接近 0.985，明顯高於 Logistic Regression。
             </p>
 
             <div class="image-box">
-                <img src="{{ url_for('static', filename='images/scikit_learn/model_compare.png') }}" alt="非神經網路模型比較圖">
+                <img src="{{ url_for('static', filename='images/scikit_learn/newmodel_compare.png') }}" alt="非神經網路模型比較圖">
             </div>
         </section>
 
         <section class="section">
-            <h2>樹狀模型分類邏輯示意</h2>
+            <h2>Balanced Accuracy 比較</h2>
             <p>
-                完整的 Random Forest 樹狀圖過於複雜，因此此處僅展示前三層節點。
-                這張圖可以用來說明樹狀模型如何根據不同特徵條件，逐步將資料分類為
-                Low、Medium 或 High。
+                Balanced Accuracy 是本次新增的重要評估指標。
+                從圖中可看出，Random Forest 在只保留前十相關欄位後，
+                Balanced Accuracy 達到約 <strong>0.9611</strong>，
+                略高於 XGBoost 的 <strong>0.9610</strong> 與
+                HistGradientBoostingClassifier 的 <strong>0.9607</strong>。
             </p>
 
             <div class="image-box">
-                <img src="{{ url_for('static', filename='images/scikit_learn/forest_depth3.png') }}" alt="Random Forest 前三層樹狀圖">
+                <img src="{{ url_for('static', filename='images/scikit_learn/balanced_accuracy_compare.png') }}" alt="Balanced Accuracy 比較圖">
             </div>
         </section>
 
         <section class="section">
-            <h2>混淆矩陣比較</h2>
+            <h2>Random Forest 特徵篩選前後比較</h2>
+            <p>
+                Random Forest 在使用完整特徵時已具有良好表現，
+                但經過測試二，也就是只保留前十個相關欄位後，
+                Accuracy 與 Balanced Accuracy 皆進一步提升。
+                因此新版模型中另外儲存了 <strong>Rfmodelnew</strong> 作為更新後的 Random Forest 模型。
+            </p>
+
+            <div class="confusion-grid">
+                <div class="confusion-card">
+                    <h3>Random Forest：完整特徵</h3>
+                    <img src="{{ url_for('static', filename='images/scikit_learn/confusion_rf.png') }}" alt="Random Forest 原始混淆矩陣">
+                </div>
+
+                <div class="confusion-card">
+                    <h3>Random Forest：前十相關欄位</h3>
+                    <img src="{{ url_for('static', filename='images/scikit_learn/confusion_rf_test2.png') }}" alt="Random Forest 前十欄位混淆矩陣">
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+        <section class="section">
+            <h2>最終採用模型版本說明</h2>
+            <p>
+                由於每個模型在不同特徵篩選方式下的表現不同，因此本頁在混淆矩陣比較中，
+                並不是放入所有測試版本，而是選擇各模型最後採用或表現最佳的版本進行比較。
+            </p>
+
+            <table>
+                <tr>
+                    <th>模型</th>
+                    <th>最終採用版本</th>
+                    <th>選擇原因</th>
+                </tr>
+                <tr>
+                    <td>Logistic Regression</td>
+                    <td>完整特徵版本</td>
+                    <td>刪除低相關欄位與只保留前十欄位後，模型表現皆略微下降，因此保留完整特徵版本。</td>
+                </tr>
+                <tr>
+                    <td>Random Forest</td>
+                    <td>前十相關欄位版本</td>
+                    <td>測試一刪除低相關欄位後表現提升，進一步測試只保留前十欄位後，Accuracy 與 Balanced Accuracy 皆達到最高。</td>
+                </tr>
+                <tr>
+                    <td>XGBoost</td>
+                    <td>完整特徵版本</td>
+                    <td>刪除低相關欄位後 Balanced Accuracy 略微下降，因此未繼續進行測試二，並採用完整特徵版本。</td>
+                </tr>
+                <tr>
+                    <td>HistGradientBoosting</td>
+                    <td>完整特徵版本</td>
+                    <td>刪除低相關欄位後模型表現未提升，因此未繼續進行測試二，並採用完整特徵版本。</td>
+                </tr>
+            </table>
+        </section>
+            <h2>各模型混淆矩陣比較</h2>
             <p>
                 混淆矩陣可用來觀察模型對 Low、Medium、High 三種類別的分類情況。
                 對角線代表預測正確的數量，非對角線則代表分類錯誤的情況。
@@ -148,8 +230,8 @@
                 </div>
 
                 <div class="confusion-card">
-                    <h3>Random Forest</h3>
-                    <img src="{{ url_for('static', filename='images/scikit_learn/confusion_rf.png') }}" alt="Random Forest 混淆矩陣">
+                    <h3>Random Forest New</h3>
+                    <img src="{{ url_for('static', filename='images/scikit_learn/confusion_rf_test2.png') }}" alt="Random Forest New 混淆矩陣">
                 </div>
 
                 <div class="confusion-card">
@@ -165,18 +247,32 @@
         </section>
 
         <section class="section">
+            <h2>樹狀模型分類邏輯示意</h2>
+            <p>
+                完整的 Random Forest 樹狀圖非常龐大，因此網頁中僅展示前三層節點。
+                此圖可用來說明樹狀模型如何根據不同特徵條件逐步進行分類判斷。
+            </p>
+
+            <div class="image-box">
+                <img src="{{ url_for('static', filename='images/scikit_learn/forest_depth3.png') }}" alt="Random Forest 前三層樹狀圖">
+            </div>
+        </section>
+
+        <section class="section conclusion-section">
             <h2>結果小結</h2>
             <p>
-                根據模型評估結果，Random Forest、XGBoost 與 HistGradientBoostingClassifier
-                的表現明顯優於 Logistic Regression。推測原因是灌溉需求與土壤、氣候、
-                作物類型等特徵之間可能存在非線性關係，而樹狀模型較能捕捉這類複雜規則。
+                綜合比較結果可知，Logistic Regression 的表現明顯低於其他樹狀模型。
+                Random Forest、XGBoost 與 HistGradientBoostingClassifier 在 Accuracy 上皆達到約 0.985，
+                顯示樹狀模型能有效處理本資料集中土壤、氣候與作物條件之間的非線性關係。
+                其中 Random Forest 在只保留前十個相關欄位後，Accuracy 提升至約 0.9858，
+                Balanced Accuracy 也提升至約 0.9611，成為本次非神經網路模型中表現最佳的版本。
             </p>
         </section>
 
     </main>
 
     <footer>
-        <p>Scikit-learn / XGBoost Models | Non-Neural Network Model Comparison</p>
+        <p>Scikit-learn / XGBoost Models | Feature Selection and Model Comparison</p>
     </footer>
 
 </body>
