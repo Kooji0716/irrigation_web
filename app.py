@@ -9,7 +9,6 @@ from pathlib import Path
 app = Flask(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent
-
 DATA_DIR = BASE_DIR / "data"
 MODEL_DIR = BASE_DIR / "models"
 
@@ -51,9 +50,14 @@ sklearn_models = {
 # 神經網路模型設定
 # =========================
 # 注意：
-# 不在 app.py 啟動時直接載入 TensorFlow 模型，
-# 避免 .keras 模型版本不相容時導致整個 Flask 網站無法啟動。
-tf_model_path = MODEL_DIR / "best_irrigation_tf_model.keras"
+# 這裡使用修復後的 Keras 模型檔。
+# 請先執行 fix_keras_model.py 產生：
+# models/best_irrigation_tf_model_fixed.keras
+#
+# 並且不在 app.py 啟動時直接載入 TensorFlow 模型，
+# 避免模型版本不相容時導致整個 Flask 網站無法啟動。
+tf_model_path = MODEL_DIR / "best_irrigation_tf_model_fixed.keras"
+print("TensorFlow model path:", tf_model_path)
 tf_model = None
 
 
@@ -170,34 +174,6 @@ def predict_with_sklearn_model(model_type, input_df):
 
 
 # =========================
-# 修正 Keras BatchNormalization 相容性
-# =========================
-def patch_batch_normalization_layer(layer_class):
-    """
-    修正不同 Keras 版本造成的 BatchNormalization 參數相容性問題。
-
-    某些模型檔會包含：
-    - renorm
-    - renorm_clipping
-    - renorm_momentum
-
-    但新版 Keras 的 BatchNormalization 不接受這些參數，
-    因此在 from_config 時先移除。
-    """
-
-    original_from_config = layer_class.from_config
-
-    def fixed_from_config(cls, config):
-        config = dict(config)
-        config.pop("renorm", None)
-        config.pop("renorm_clipping", None)
-        config.pop("renorm_momentum", None)
-        return original_from_config(config)
-
-    layer_class.from_config = classmethod(fixed_from_config)
-
-
-# =========================
 # 神經網路模型預測
 # =========================
 def predict_with_tensorflow_model(input_df):
@@ -213,17 +189,13 @@ def predict_with_tensorflow_model(input_df):
 
     if not tf_model_path.exists():
         raise FileNotFoundError(
-            "找不到 models/best_irrigation_tf_model.keras，請確認神經網路模型檔是否已放入 models 資料夾。"
+            "找不到 models/best_irrigation_tf_model_fixed.keras。"
+            "請先執行 fix_keras_model.py，或確認修復後的模型檔已放入 models 資料夾。"
         )
 
     if tf_model is None:
         try:
             import tensorflow as tf
-            import keras
-
-            # 同時修補 tf.keras 和 keras 的 BatchNormalization
-            patch_batch_normalization_layer(tf.keras.layers.BatchNormalization)
-            patch_batch_normalization_layer(keras.layers.BatchNormalization)
 
             tf_model = tf.keras.models.load_model(
                 tf_model_path,
@@ -361,4 +333,4 @@ def predict():
 # Run Flask
 # =========================
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)

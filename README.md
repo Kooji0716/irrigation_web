@@ -132,3 +132,9 @@ IRRIGATION_WEB/
 │   └── files/
 │       └── prediction_mismatches_report.csv
 │
+
+
+## Keras / TensorFlow 神經網路模型相容性說明
+
+本專案的神經網路模型使用 Keras / TensorFlow 儲存。由於不同版本的 Keras / TensorFlow 對模型設定參數的支援不同，原始模型檔：
+models/best_irrigation_tf_model.keras
