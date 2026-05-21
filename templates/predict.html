@@ -245,8 +245,17 @@
             {% if result %}
             <section class="result-card">
                 <h2>預測結果</h2>
+
+                {% if selected_model_name %}
+                <p class="model-used">使用模型：{{ selected_model_name }}</p>
+                {% endif %}
+
                 <p class="result-label">{{ result }}</p>
                 <p>{{ explanation }}</p>
+
+                {% if probability_text %}
+                <p class="probability-text">{{ probability_text }}</p>
+                {% endif %}
             </section>
             {% endif %}
 

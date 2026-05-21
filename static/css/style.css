@@ -683,3 +683,20 @@ table td:nth-child(6) {
     font-size: 16px;
     line-height: 1.8;
 }
+
+.model-used {
+    font-size: 18px;
+    color: #374151;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.probability-text {
+    margin-top: 16px;
+    padding: 14px 18px;
+    background-color: #e9f7ef;
+    border-radius: 12px;
+    color: #1b4332;
+    font-size: 17px;
+    font-weight: 600;
+}
