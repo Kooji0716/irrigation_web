@@ -213,18 +213,35 @@
                 <h2>模型選擇</h2>
 
                 <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label>請選擇預測模型</label>
+                    <div class="form-group">
+                        <label>模型類型</label>
+                        <select name="model_group" id="model_group" required onchange="updateModelOptions()">
+                            <option value="sklearn">非神經網路模型</option>
+                            <option value="tensorflow">神經網路模型</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>模型名稱</label>
                         <select name="model_type" id="model_type" required>
-                            <option value="rf">非神經網路模型：Random Forest New</option>
-                            <option value="nn">神經網路模型：Keras / TensorFlow MLP</option>
+                            <option value="lr">Logistic Regression</option>
+                            <option value="rf">Random Forest</option>
+                            <option value="rf_new">Random Forest New</option>
+                            <option value="xgb">XGBoost</option>
+                            <option value="hgbc">HistGradientBoosting</option>
                         </select>
                     </div>
                 </div>
 
+                <div class="model-note">
+                    <p>
+                        非神經網路模型包含 Logistic Regression、Random Forest、Random Forest New、
+                        XGBoost 與 HistGradientBoosting；神經網路模型目前使用 Keras / TensorFlow MLP。
+                    </p>
+                </div>
+
                 <button type="submit" class="predict-btn">開始預測</button>
             </section>
-
             {% if result %}
             <section class="result-card">
                 <h2>預測結果</h2>

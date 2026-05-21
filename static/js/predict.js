@@ -85,3 +85,38 @@ function loadExample() {
         setValue("Previous_Irrigation_mm", 80.00);
     }
 }
+
+//後面更改的功能
+//如果使用者選「非神經網路模型」→ 第二個下拉選單出現 5 個模型
+//如果使用者選「神經網路模型」→ 第二個下拉選單只出現 Keras / TensorFlow MLP
+
+function updateModelOptions() {
+    const modelGroup = document.getElementById("model_group").value;
+    const modelType = document.getElementById("model_type");
+
+    modelType.innerHTML = "";
+
+    if (modelGroup === "sklearn") {
+        const options = [
+            ["lr", "Logistic Regression"],
+            ["rf", "Random Forest"],
+            ["rf_new", "Random Forest New"],
+            ["xgb", "XGBoost"],
+            ["hgbc", "HistGradientBoosting"]
+        ];
+
+        options.forEach(function(item) {
+            const option = document.createElement("option");
+            option.value = item[0];
+            option.textContent = item[1];
+            modelType.appendChild(option);
+        });
+    }
+
+    if (modelGroup === "tensorflow") {
+        const option = document.createElement("option");
+        option.value = "nn";
+        option.textContent = "Keras / TensorFlow MLP";
+        modelType.appendChild(option);
+    }
+}
