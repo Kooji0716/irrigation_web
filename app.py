@@ -4,6 +4,7 @@ import joblib
 import pandas as pd
 import numpy as np
 from pathlib import Path
+import tensorflow as tf
 
 app = Flask(__name__)
 
@@ -24,7 +25,7 @@ with open(DATA_DIR / "num_cols.json", "r", encoding="utf-8") as f:
 with open(DATA_DIR / "rf_top10_features.json", "r", encoding="utf-8") as f:
     rf_top10_features = json.load(f)
 
-
+#載入非神經網路模型
 # 載入 Logistic Regression
 lr_model = joblib.load(MODEL_DIR / "Lrmodel.pkl")
 
@@ -40,6 +41,13 @@ sklearn_models = {
     "xgb": joblib.load(MODEL_DIR / "Xgbmodel.pkl"),
     "hgbc": joblib.load(MODEL_DIR / "Hgbcmodel.pkl"),
 }
+
+# 載入神經網路模型
+tf_model_path = MODEL_DIR / "best_irrigation_tf_model.keras"
+tf_model = None
+
+if tf_model_path.exists():
+    tf_model = tf.keras.models.load_model(tf_model_path)
 
 model_display_names = {
     "lr": "Logistic Regression",
@@ -135,6 +143,36 @@ def predict_with_sklearn_model(model_type, input_df):
     return result, probability_text
 
 
+def predict_with_tensorflow_model(input_df):
+    """
+    使用 Keras / TensorFlow MLP 模型進行預測。
+    神經網路模型使用完整 42 個特徵。
+    """
+
+    if tf_model is None:
+        raise FileNotFoundError(
+            "找不到 models/best_irrigation_tf_model.keras，請確認神經網路模型檔是否已放入 models 資料夾。"
+        )
+
+    # Keras 模型使用完整 42 個特徵，並轉成 float32
+    model_input = input_df[feature_columns].astype("float32")
+
+    # 預測三個類別的機率
+    probs = tf_model.predict(model_input, verbose=0)[0]
+
+    # 取機率最高的類別
+    pred = int(np.argmax(probs))
+
+    result = label_map[pred]
+
+    probability_text = (
+        f"Low：{probs[0] * 100:.2f}%｜"
+        f"Medium：{probs[1] * 100:.2f}%｜"
+        f"High：{probs[2] * 100:.2f}%"
+    )
+
+    return result, probability_text
+
 def get_result_explanation(result):
     """
     根據預測結果給使用者簡單解釋。
@@ -194,15 +232,16 @@ def predict():
                 )
 
             elif model_group == "tensorflow":
-                result = "尚未串接"
-                explanation = "神經網路模型尚未正式串接，下一步會加入 Keras / TensorFlow MLP 預測功能。"
+                result, probability_text = predict_with_tensorflow_model(input_df)
+
+                explanation = get_result_explanation(result)
                 selected_model_name = "Keras / TensorFlow MLP"
 
                 return render_template(
                     "predict.html",
                     result=result,
                     explanation=explanation,
-                    probability_text="",
+                    probability_text=probability_text,
                     selected_model_name=selected_model_name,
                 )
 
