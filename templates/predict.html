@@ -8,6 +8,8 @@
 </head>
 <body>
 
+    {% set fd = form_data if form_data is defined else {} %}
+
     <header class="navbar">
         <div class="logo">機器學習概論-智慧灌溉需求預測系統</div>
         <nav>
@@ -58,31 +60,35 @@
                     <div class="form-group">
                         <label>Soil Type</label>
                         <select name="Soil_Type" id="Soil_Type" required>
-                            <option value="Clay">Clay</option>
-                            <option value="Loamy">Loamy</option>
-                            <option value="Sandy">Sandy</option>
-                            <option value="Silt">Silt</option>
+                            <option value="Clay" {% if fd.get('Soil_Type') == 'Clay' %}selected{% endif %}>Clay</option>
+                            <option value="Loamy" {% if fd.get('Soil_Type') == 'Loamy' %}selected{% endif %}>Loamy</option>
+                            <option value="Sandy" {% if fd.get('Soil_Type') == 'Sandy' %}selected{% endif %}>Sandy</option>
+                            <option value="Silt" {% if fd.get('Soil_Type') == 'Silt' %}selected{% endif %}>Silt</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Soil pH</label>
-                        <input type="number" step="0.01" name="Soil_pH" id="Soil_pH" required>
+                        <input type="number" step="0.01" name="Soil_pH" id="Soil_pH"
+                               value="{{ fd.get('Soil_pH', '') }}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Soil Moisture</label>
-                        <input type="number" step="0.01" name="Soil_Moisture" id="Soil_Moisture" required>
+                        <input type="number" step="0.01" name="Soil_Moisture" id="Soil_Moisture"
+                               value="{{ fd.get('Soil_Moisture', '') }}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Organic Carbon</label>
-                        <input type="number" step="0.01" name="Organic_Carbon" id="Organic_Carbon" required>
+                        <input type="number" step="0.01" name="Organic_Carbon" id="Organic_Carbon"
+                               value="{{ fd.get('Organic_Carbon', '') }}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Electrical Conductivity</label>
-                        <input type="number" step="0.01" name="Electrical_Conductivity" id="Electrical_Conductivity" required>
+                        <input type="number" step="0.01" name="Electrical_Conductivity" id="Electrical_Conductivity"
+                               value="{{ fd.get('Electrical_Conductivity', '') }}" required>
                     </div>
                 </div>
             </section>
@@ -93,27 +99,32 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Temperature C</label>
-                        <input type="number" step="0.01" name="Temperature_C" id="Temperature_C" required>
+                        <input type="number" step="0.01" name="Temperature_C" id="Temperature_C"
+                               value="{{ fd.get('Temperature_C', '') }}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Humidity</label>
-                        <input type="number" step="0.01" name="Humidity" id="Humidity" required>
+                        <input type="number" step="0.01" name="Humidity" id="Humidity"
+                               value="{{ fd.get('Humidity', '') }}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Rainfall mm</label>
-                        <input type="number" step="0.01" name="Rainfall_mm" id="Rainfall_mm" required>
+                        <input type="number" step="0.01" name="Rainfall_mm" id="Rainfall_mm"
+                               value="{{ fd.get('Rainfall_mm', '') }}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Sunlight Hours</label>
-                        <input type="number" step="0.01" name="Sunlight_Hours" id="Sunlight_Hours" required>
+                        <input type="number" step="0.01" name="Sunlight_Hours" id="Sunlight_Hours"
+                               value="{{ fd.get('Sunlight_Hours', '') }}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Wind Speed kmh</label>
-                        <input type="number" step="0.01" name="Wind_Speed_kmh" id="Wind_Speed_kmh" required>
+                        <input type="number" step="0.01" name="Wind_Speed_kmh" id="Wind_Speed_kmh"
+                               value="{{ fd.get('Wind_Speed_kmh', '') }}" required>
                     </div>
                 </div>
             </section>
@@ -125,42 +136,42 @@
                     <div class="form-group">
                         <label>Crop Type</label>
                         <select name="Crop_Type" id="Crop_Type" required>
-                            <option value="Cotton">Cotton</option>
-                            <option value="Maize">Maize</option>
-                            <option value="Potato">Potato</option>
-                            <option value="Rice">Rice</option>
-                            <option value="Sugarcane">Sugarcane</option>
-                            <option value="Wheat">Wheat</option>
+                            <option value="Cotton" {% if fd.get('Crop_Type') == 'Cotton' %}selected{% endif %}>Cotton</option>
+                            <option value="Maize" {% if fd.get('Crop_Type') == 'Maize' %}selected{% endif %}>Maize</option>
+                            <option value="Potato" {% if fd.get('Crop_Type') == 'Potato' %}selected{% endif %}>Potato</option>
+                            <option value="Rice" {% if fd.get('Crop_Type') == 'Rice' %}selected{% endif %}>Rice</option>
+                            <option value="Sugarcane" {% if fd.get('Crop_Type') == 'Sugarcane' %}selected{% endif %}>Sugarcane</option>
+                            <option value="Wheat" {% if fd.get('Crop_Type') == 'Wheat' %}selected{% endif %}>Wheat</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Crop Growth Stage</label>
                         <select name="Crop_Growth_Stage" id="Crop_Growth_Stage" required>
-                            <option value="Flowering">Flowering</option>
-                            <option value="Harvest">Harvest</option>
-                            <option value="Sowing">Sowing</option>
-                            <option value="Vegetative">Vegetative</option>
+                            <option value="Flowering" {% if fd.get('Crop_Growth_Stage') == 'Flowering' %}selected{% endif %}>Flowering</option>
+                            <option value="Harvest" {% if fd.get('Crop_Growth_Stage') == 'Harvest' %}selected{% endif %}>Harvest</option>
+                            <option value="Sowing" {% if fd.get('Crop_Growth_Stage') == 'Sowing' %}selected{% endif %}>Sowing</option>
+                            <option value="Vegetative" {% if fd.get('Crop_Growth_Stage') == 'Vegetative' %}selected{% endif %}>Vegetative</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Season</label>
                         <select name="Season" id="Season" required>
-                            <option value="Kharif">Kharif</option>
-                            <option value="Rabi">Rabi</option>
-                            <option value="Zaid">Zaid</option>
+                            <option value="Kharif" {% if fd.get('Season') == 'Kharif' %}selected{% endif %}>Kharif</option>
+                            <option value="Rabi" {% if fd.get('Season') == 'Rabi' %}selected{% endif %}>Rabi</option>
+                            <option value="Zaid" {% if fd.get('Season') == 'Zaid' %}selected{% endif %}>Zaid</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Region</label>
                         <select name="Region" id="Region" required>
-                            <option value="Central">Central</option>
-                            <option value="East">East</option>
-                            <option value="North">North</option>
-                            <option value="South">South</option>
-                            <option value="West">West</option>
+                            <option value="Central" {% if fd.get('Region') == 'Central' %}selected{% endif %}>Central</option>
+                            <option value="East" {% if fd.get('Region') == 'East' %}selected{% endif %}>East</option>
+                            <option value="North" {% if fd.get('Region') == 'North' %}selected{% endif %}>North</option>
+                            <option value="South" {% if fd.get('Region') == 'South' %}selected{% endif %}>South</option>
+                            <option value="West" {% if fd.get('Region') == 'West' %}selected{% endif %}>West</option>
                         </select>
                     </div>
                 </div>
@@ -173,39 +184,41 @@
                     <div class="form-group">
                         <label>Irrigation Type</label>
                         <select name="Irrigation_Type" id="Irrigation_Type" required>
-                            <option value="Canal">Canal</option>
-                            <option value="Drip">Drip</option>
-                            <option value="Rainfed">Rainfed</option>
-                            <option value="Sprinkler">Sprinkler</option>
+                            <option value="Canal" {% if fd.get('Irrigation_Type') == 'Canal' %}selected{% endif %}>Canal</option>
+                            <option value="Drip" {% if fd.get('Irrigation_Type') == 'Drip' %}selected{% endif %}>Drip</option>
+                            <option value="Rainfed" {% if fd.get('Irrigation_Type') == 'Rainfed' %}selected{% endif %}>Rainfed</option>
+                            <option value="Sprinkler" {% if fd.get('Irrigation_Type') == 'Sprinkler' %}selected{% endif %}>Sprinkler</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Water Source</label>
                         <select name="Water_Source" id="Water_Source" required>
-                            <option value="Groundwater">Groundwater</option>
-                            <option value="Rainwater">Rainwater</option>
-                            <option value="Reservoir">Reservoir</option>
-                            <option value="River">River</option>
+                            <option value="Groundwater" {% if fd.get('Water_Source') == 'Groundwater' %}selected{% endif %}>Groundwater</option>
+                            <option value="Rainwater" {% if fd.get('Water_Source') == 'Rainwater' %}selected{% endif %}>Rainwater</option>
+                            <option value="Reservoir" {% if fd.get('Water_Source') == 'Reservoir' %}selected{% endif %}>Reservoir</option>
+                            <option value="River" {% if fd.get('Water_Source') == 'River' %}selected{% endif %}>River</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Field Area hectare</label>
-                        <input type="number" step="0.01" name="Field_Area_hectare" id="Field_Area_hectare" required>
+                        <input type="number" step="0.01" name="Field_Area_hectare" id="Field_Area_hectare"
+                               value="{{ fd.get('Field_Area_hectare', '') }}" required>
                     </div>
 
                     <div class="form-group">
                         <label>Mulching Used</label>
                         <select name="Mulching_Used" id="Mulching_Used" required>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
+                            <option value="Yes" {% if fd.get('Mulching_Used') == 'Yes' %}selected{% endif %}>Yes</option>
+                            <option value="No" {% if fd.get('Mulching_Used') == 'No' %}selected{% endif %}>No</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>Previous Irrigation mm</label>
-                        <input type="number" step="0.01" name="Previous_Irrigation_mm" id="Previous_Irrigation_mm" required>
+                        <input type="number" step="0.01" name="Previous_Irrigation_mm" id="Previous_Irrigation_mm"
+                               value="{{ fd.get('Previous_Irrigation_mm', '') }}" required>
                     </div>
                 </div>
             </section>
@@ -217,19 +230,23 @@
                     <div class="form-group">
                         <label>模型類型</label>
                         <select name="model_group" id="model_group" required onchange="updateModelOptions()">
-                            <option value="sklearn">非神經網路模型</option>
-                            <option value="tensorflow">神經網路模型</option>
+                            <option value="sklearn" {% if fd.get('model_group', 'sklearn') == 'sklearn' %}selected{% endif %}>非神經網路模型</option>
+                            <option value="tensorflow" {% if fd.get('model_group') == 'tensorflow' %}selected{% endif %}>神經網路模型</option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>模型名稱</label>
                         <select name="model_type" id="model_type" required>
-                            <option value="lr">Logistic Regression</option>
-                            <option value="rf">Random Forest</option>
-                            <option value="rf_new">Random Forest New</option>
-                            <option value="xgb">XGBoost</option>
-                            <option value="hgbc">HistGradientBoosting</option>
+                            {% if fd.get('model_group') == 'tensorflow' %}
+                                <option value="nn" {% if fd.get('model_type') == 'nn' %}selected{% endif %}>Keras / TensorFlow MLP</option>
+                            {% else %}
+                                <option value="lr" {% if fd.get('model_type', 'lr') == 'lr' %}selected{% endif %}>Logistic Regression</option>
+                                <option value="rf" {% if fd.get('model_type') == 'rf' %}selected{% endif %}>Random Forest</option>
+                                <option value="rf_new" {% if fd.get('model_type') == 'rf_new' %}selected{% endif %}>Random Forest New</option>
+                                <option value="xgb" {% if fd.get('model_type') == 'xgb' %}selected{% endif %}>XGBoost</option>
+                                <option value="hgbc" {% if fd.get('model_type') == 'hgbc' %}selected{% endif %}>HistGradientBoosting</option>
+                            {% endif %}
                         </select>
                     </div>
                 </div>
@@ -243,6 +260,7 @@
 
                 <button type="submit" class="predict-btn">開始預測</button>
             </section>
+
             {% if result %}
             <section class="result-card">
                 <h2>預測結果</h2>
@@ -269,5 +287,6 @@
     </footer>
 
     <script src="{{ url_for('static', filename='js/predict.js') }}"></script>
+
 </body>
 </html>

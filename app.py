@@ -298,6 +298,7 @@ def predict():
                     explanation=explanation,
                     probability_text=probability_text,
                     selected_model_name=selected_model_name,
+                    form_data=request.form
                 )
 
             elif model_group == "tensorflow":
@@ -312,6 +313,7 @@ def predict():
                     explanation=explanation,
                     probability_text=probability_text,
                     selected_model_name=selected_model_name,
+                    form_data=request.form
                 )
 
             else:
@@ -324,9 +326,10 @@ def predict():
                 explanation=f"錯誤訊息：{str(e)}",
                 probability_text="",
                 selected_model_name="",
+                form_data=request.form
             )
 
-    return render_template("predict.html")
+    return render_template("predict.html", form_data={})
 
 
 # =========================

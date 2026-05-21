@@ -1,5 +1,9 @@
 function setValue(id, value) {
-    document.getElementById(id).value = value;
+    const element = document.getElementById(id);
+
+    if (element) {
+        element.value = value;
+    }
 }
 
 function loadExample() {
@@ -86,17 +90,19 @@ function loadExample() {
     }
 }
 
-//後面更改的功能
-//如果使用者選「非神經網路模型」→ 第二個下拉選單出現 5 個模型
-//如果使用者選「神經網路模型」→ 第二個下拉選單只出現 Keras / TensorFlow MLP
-
+// 使用者切換模型類型時，更新第二個模型下拉選單。
+// 注意：不要在頁面載入時自動呼叫這個函式，否則會把預測後保留的模型選項洗掉。
 function updateModelOptions() {
-    const modelGroup = document.getElementById("model_group").value;
+    const modelGroup = document.getElementById("model_group");
     const modelType = document.getElementById("model_type");
+
+    if (!modelGroup || !modelType) {
+        return;
+    }
 
     modelType.innerHTML = "";
 
-    if (modelGroup === "sklearn") {
+    if (modelGroup.value === "sklearn") {
         const options = [
             ["lr", "Logistic Regression"],
             ["rf", "Random Forest"],
@@ -113,7 +119,7 @@ function updateModelOptions() {
         });
     }
 
-    if (modelGroup === "tensorflow") {
+    if (modelGroup.value === "tensorflow") {
         const option = document.createElement("option");
         option.value = "nn";
         option.textContent = "Keras / TensorFlow MLP";
