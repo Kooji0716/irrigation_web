@@ -700,3 +700,110 @@ table td:nth-child(6) {
     font-size: 17px;
     font-weight: 600;
 }
+
+/* =========================
+   Diagnostics Page
+========================= */
+
+.diagnostic-flow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+.diagnostic-step {
+    background-color: #e9f7ef;
+    color: #1b4332;
+    padding: 18px 22px;
+    border-radius: 14px;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.diagnostic-arrow {
+    font-size: 26px;
+    color: #2f6f4e;
+    font-weight: 800;
+}
+
+.diagnostic-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    margin-top: 28px;
+}
+
+.diagnostic-card {
+    background-color: #ffffff;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    border-left: 6px solid #52b788;
+}
+
+.diagnostic-card h3 {
+    color: #1b4332;
+    font-size: 22px;
+    margin-bottom: 16px;
+}
+
+.diagnostic-card img {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+.note-box {
+    margin-top: 20px;
+    padding: 18px 22px;
+    background-color: #fff7ed;
+    border-left: 5px solid #f59e0b;
+    border-radius: 12px;
+}
+
+.note-box p {
+    color: #374151;
+    line-height: 1.8;
+}
+
+.diagnostic-image-block {
+    margin-top: 32px;
+    background-color: #ffffff;
+    border-radius: 18px;
+    padding: 26px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+    border-left: 6px solid #52b788;
+}
+
+.diagnostic-image-block h3 {
+    color: #1b4332;
+    font-size: 24px;
+    margin-bottom: 16px;
+}
+
+.diagnostic-image-block img {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 18px;
+}
+
+@media (max-width: 900px) {
+    .diagnostic-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .diagnostic-flow {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .diagnostic-arrow {
+        transform: rotate(90deg);
+        text-align: center;
+    }
+}

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模型診斷與多數決預測 | Smart Irrigation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">機器學習概論-智慧灌溉需求預測系統</div>
+        <nav>
+            <a href="/">首頁</a>
+            <a href="/preprocessing">資料前處理</a>
+            <a href="/sklearn-models">非神經網路模型</a>
+            <a href="/neural-network">神經網路模型</a>
+            <a href="/diagnostics">模型診斷</a>
+            <a href="/predict">預測系統</a>
+        </nav>
+    </header>
+
+    <main class="container">
+
+        <section class="page-title">
+            <h1>模型診斷與多數決預測</h1>
+            <p>
+                本頁針對測試資料所進行的模型診斷與最終預測整合。
+                此部分主要目的不是重新訓練模型，而是將 test.csv 整理成模型可使用的格式後，
+                分別輸入多個模型進行預測，並透過模型間的一致性比較與多數決方式產生最終預測結果。
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>分析目的</h2>
+            <p>
+                Kaggle 的 test.csv 通常不包含真實標籤，因此此階段的重點不是直接計算最終正確率，
+                而是觀察不同模型對同一批測試資料的預測是否一致。
+                若多數模型對同一筆資料給出相同結果，代表該筆資料的預測較穩定；
+                若模型間出現分歧，則可能表示該筆資料較接近分類邊界，模型判斷較不一致。
+            </p>
+        </section>
+
+        <section class="section">
+            <h2>整體分析流程</h2>
+            <p>
+                首先使用 <strong>clean_test.py</strong> 將原始 test.csv 轉換成與 clean_train.csv 相同的欄位格式。
+                接著將整理後的測試資料分別輸入 scikit-learn 模型與 TensorFlow 模型進行預測。
+                最後透過 <strong>prediction_compare.py</strong> 比較各模型輸出結果，
+                並使用多數決產生最終答案檔案 <strong>final_predictions_voting.csv</strong>。
+            </p>
+
+            <div class="diagnostic-flow">
+                <div class="diagnostic-step">test.csv</div>
+                <div class="diagnostic-arrow">→</div>
+                <div class="diagnostic-step">clean_test.py</div>
+                <div class="diagnostic-arrow">→</div>
+                <div class="diagnostic-step">clean_test.csv</div>
+                <div class="diagnostic-arrow">→</div>
+                <div class="diagnostic-step">多模型預測</div>
+                <div class="diagnostic-arrow">→</div>
+                <div class="diagnostic-step">模型一致性比較</div>
+                <div class="diagnostic-arrow">→</div>
+                <div class="diagnostic-step">多數決輸出</div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>過擬合程度分析</h2>
+            <p>
+                過擬合分析主要比較模型在訓練資料與驗證資料上的準確率差距。
+                若 Train Accuracy 明顯高於 Validation Accuracy，代表模型可能過度記住訓練資料；
+                若兩者差距小，則代表模型在未知資料上的泛化能力較穩定。
+            </p>
+
+            <div class="diagnostic-grid">
+                <div class="diagnostic-card">
+                    <h3>TensorFlow MLP 模型</h3>
+                    <img src="{{ url_for('static', filename='images/diagnostics/tensorflow_metrics.png') }}" alt="TensorFlow 模型訓練與指標">
+                    <p>
+                        TensorFlow MLP 模型的訓練準確率、驗證準確率與測試準確率相當接近，
+                        Gap 幾乎為 0，表示模型在訓練資料與驗證資料上的表現穩定，
+                        沒有明顯過擬合現象。
+                    </p>
+                </div>
+
+                <div class="diagnostic-card">
+                    <h3>scikit-learn 模型</h3>
+                    <img src="{{ url_for('static', filename='images/diagnostics/sklearn_overfitting.png') }}" alt="scikit-learn 過擬合程度">
+                    <p>
+                        Logistic Regression、XGBoost 與 HistGradientBoosting 的 Gap 較小，
+                        代表模型泛化能力較穩定。Random Forest 的訓練準確率較高，
+                        雖然驗證表現仍然良好，但相較其他模型有較明顯的訓練資料記憶傾向。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>預測信心與 ROC 輔助分析</h2>
+            <p>
+                殘差分布可用來輔助觀察模型的預測信心。殘差越接近 0，
+                代表模型對該筆資料的預測越有信心；若分布較分散，
+                則代表模型對部分資料的判斷較不確定。
+                ROC 曲線與 AUC 則可作為分類能力的輔助視覺化參考，
+                曲線越靠近左上角、AUC 越接近 1，代表模型區分類別的能力越佳。
+            </p>
+
+            <div class="note-box">
+                <p>
+                    本頁的重點是模型診斷與最終預測整合。由於 Kaggle test.csv 通常沒有真實標籤，
+                    因此最終預測階段主要以模型間預測一致性與多數決作為整合依據。
+                    殘差與 ROC 圖表在此作為輔助分析，用於說明模型預測信心與分類傾向。
+                </p>
+            </div>
+
+            <div class="diagnostic-image-block">
+                <h3>scikit-learn 模型殘差與 ROC 曲線</h3>
+                <img src="{{ url_for('static', filename='images/diagnostics/sklearn_residual_roc.png') }}" alt="scikit-learn 殘差與 ROC 曲線">
+                <p>
+                    從 scikit-learn 模型的殘差分布可以觀察模型預測信心。
+                    Random Forest、XGBoost 與 HistGradientBoosting 的殘差較集中於低值區域，
+                    顯示模型對多數樣本具有較高信心；Logistic Regression 的分布相對較分散，
+                    表示其對部分樣本較不確定。
+                </p>
+            </div>
+
+            <div class="diagnostic-image-block">
+                <h3>TensorFlow MLP 殘差與 ROC 曲線</h3>
+                <img src="{{ url_for('static', filename='images/diagnostics/tensorflow_residual_roc.png') }}" alt="TensorFlow 殘差與 ROC 曲線">
+                <p>
+                    TensorFlow MLP 的殘差分布同樣偏向低殘差區域，代表模型在多數資料上具有良好的預測信心。
+                    ROC 曲線接近左上角，顯示模型對不同灌溉需求類別具有不錯的區分能力。
+                </p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>模型一致性與多數決預測</h2>
+            <p>
+                在最終 test.csv 預測階段，第五位同學將不同模型的預測結果放在同一份資料表中比較。
+                若同一筆資料中所有模型的預測結果相同，代表模型間具有高度共識；
+                若模型之間出現不同答案，則該筆資料會被視為分歧樣本。
+            </p>
+
+            <div class="cards">
+                <div class="card">
+                    <h3>預測一致性</h3>
+                    <p>
+                        使用 <strong>df[model_columns].nunique(axis=1)</strong> 計算每筆資料中不同模型預測結果的不重複數量。
+                        若數值為 1，代表所有模型預測一致；若大於 1，代表至少有模型出現不同判斷。
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>提交預測答案</h3>
+                    <p>
+                        將模型預測結果不一致的資料列篩選出來，
+                        並輸出成 <strong>prediction_mismatches_report.csv</strong>，
+                        方便觀察哪些樣本容易造成模型判斷分歧。
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>多數決整合</h3>
+                    <p>
+                        使用 <strong>mode(axis=1)</strong> 找出每筆資料中出現次數最多的預測類別，
+                        作為該筆資料的最終答案，並輸出為 <strong>final_predictions_voting.csv</strong>。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>提交預測答案</h2>
+            <p>
+                第五位同學另外輸出 <strong>prediction_mismatches_report.csv</strong>，
+                用來記錄不同模型預測結果不一致的樣本。
+                此檔案包含樣本 id、Logistic Regression、Random Forest、XGBoost、
+                HistGradientBoosting、TensorFlow MLP 的預測結果，
+                以及該筆資料中出現的不重複答案數量。
+            </p>
+            <p>
+                透過這份報告，可以觀察哪些測試資料較容易讓模型產生不同判斷。
+                這些樣本通常可能位於分類邊界附近，因此最後會再透過多數決方式產生較穩定的最終預測結果。
+            </p>
+
+            <a class="btn" href="{{ url_for('static', filename='files/prediction_mismatches_report.csv') }}" download>
+                下載提交預測答案
+            </a>
+        </section>
+
+        <section class="section">
+            <h2>小結</h2>
+            <p>
+                第五位同學的工作補足了最終預測階段。透過 test.csv 前處理、多模型預測、
+                預測一致性比較與多數決整合，專題不只完成單一模型的預測功能，
+                也進一步比較多個模型對同一批資料的判斷是否穩定。
+                最終輸出的 <strong>final_predictions_voting.csv</strong> 可作為整合多模型結果後的最終答案。
+            </p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Model Diagnostics & Voting Prediction | Smart Irrigation Need Prediction</p>
+    </footer>
+
+</body>
+</html>

@@ -4,7 +4,7 @@ import joblib
 import pandas as pd
 import numpy as np
 from pathlib import Path
-import tensorflow as tf
+
 
 app = Flask(__name__)
 
@@ -13,7 +13,10 @@ BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "data"
 MODEL_DIR = BASE_DIR / "models"
 
+
+# =========================
 # 讀取前處理需要的檔案
+# =========================
 scaler = joblib.load(DATA_DIR / "scaler.pkl")
 
 with open(DATA_DIR / "feature_columns.json", "r", encoding="utf-8") as f:
@@ -25,15 +28,16 @@ with open(DATA_DIR / "num_cols.json", "r", encoding="utf-8") as f:
 with open(DATA_DIR / "rf_top10_features.json", "r", encoding="utf-8") as f:
     rf_top10_features = json.load(f)
 
-#載入非神經網路模型
-# 載入 Logistic Regression
+
+# =========================
+# 載入非神經網路模型
+# =========================
 lr_model = joblib.load(MODEL_DIR / "Lrmodel.pkl")
 
 # 修正不同 scikit-learn 版本造成的 multi_class 屬性問題
 if not hasattr(lr_model, "multi_class"):
     lr_model.multi_class = "auto"
 
-# 載入其他模型
 sklearn_models = {
     "lr": lr_model,
     "rf": joblib.load(MODEL_DIR / "Rfmodel.pkl"),
@@ -42,13 +46,20 @@ sklearn_models = {
     "hgbc": joblib.load(MODEL_DIR / "Hgbcmodel.pkl"),
 }
 
-# 載入神經網路模型
+
+# =========================
+# 神經網路模型設定
+# =========================
+# 注意：
+# 不在 app.py 啟動時直接載入 TensorFlow 模型，
+# 避免 .keras 模型版本不相容時導致整個 Flask 網站無法啟動。
 tf_model_path = MODEL_DIR / "best_irrigation_tf_model.keras"
 tf_model = None
 
-if tf_model_path.exists():
-    tf_model = tf.keras.models.load_model(tf_model_path)
 
+# =========================
+# 顯示名稱與標籤對應
+# =========================
 model_display_names = {
     "lr": "Logistic Regression",
     "rf": "Random Forest",
@@ -65,6 +76,9 @@ label_map = {
 }
 
 
+# =========================
+# 將使用者輸入轉成模型格式
+# =========================
 def build_input_dataframe(form_data):
     """
     將使用者在網頁輸入的原始農業參數，
@@ -78,7 +92,12 @@ def build_input_dataframe(form_data):
     raw_num_data = {}
 
     for col in num_cols:
-        raw_num_data[col] = float(form_data.get(col))
+        raw_value = form_data.get(col)
+
+        if raw_value is None or raw_value == "":
+            raise ValueError(f"欄位 {col} 沒有填寫，請確認表單資料完整。")
+
+        raw_num_data[col] = float(raw_value)
 
     raw_num_df = pd.DataFrame([raw_num_data], columns=num_cols)
     scaled_values = scaler.transform(raw_num_df)
@@ -110,10 +129,16 @@ def build_input_dataframe(form_data):
     return input_df
 
 
+# =========================
+# 非神經網路模型預測
+# =========================
 def predict_with_sklearn_model(model_type, input_df):
     """
     根據使用者選擇的非神經網路模型進行預測。
     """
+
+    if model_type not in sklearn_models:
+        raise ValueError(f"找不到模型：{model_type}")
 
     model = sklearn_models[model_type]
 
@@ -134,6 +159,7 @@ def predict_with_sklearn_model(model_type, input_df):
     # 如果模型支援 predict_proba，就顯示三類機率
     if hasattr(model, "predict_proba"):
         probs = model.predict_proba(model_input)[0]
+
         probability_text = (
             f"Low：{probs[0] * 100:.2f}%｜"
             f"Medium：{probs[1] * 100:.2f}%｜"
@@ -143,16 +169,72 @@ def predict_with_sklearn_model(model_type, input_df):
     return result, probability_text
 
 
+# =========================
+# 修正 Keras BatchNormalization 相容性
+# =========================
+def patch_batch_normalization_layer(layer_class):
+    """
+    修正不同 Keras 版本造成的 BatchNormalization 參數相容性問題。
+
+    某些模型檔會包含：
+    - renorm
+    - renorm_clipping
+    - renorm_momentum
+
+    但新版 Keras 的 BatchNormalization 不接受這些參數，
+    因此在 from_config 時先移除。
+    """
+
+    original_from_config = layer_class.from_config
+
+    def fixed_from_config(cls, config):
+        config = dict(config)
+        config.pop("renorm", None)
+        config.pop("renorm_clipping", None)
+        config.pop("renorm_momentum", None)
+        return original_from_config(config)
+
+    layer_class.from_config = classmethod(fixed_from_config)
+
+
+# =========================
+# 神經網路模型預測
+# =========================
 def predict_with_tensorflow_model(input_df):
     """
     使用 Keras / TensorFlow MLP 模型進行預測。
     神經網路模型使用完整 42 個特徵。
+
+    採用延遲載入：
+    只有使用者真的選神經網路模型時才載入 .keras 檔。
     """
 
-    if tf_model is None:
+    global tf_model
+
+    if not tf_model_path.exists():
         raise FileNotFoundError(
             "找不到 models/best_irrigation_tf_model.keras，請確認神經網路模型檔是否已放入 models 資料夾。"
         )
+
+    if tf_model is None:
+        try:
+            import tensorflow as tf
+            import keras
+
+            # 同時修補 tf.keras 和 keras 的 BatchNormalization
+            patch_batch_normalization_layer(tf.keras.layers.BatchNormalization)
+            patch_batch_normalization_layer(keras.layers.BatchNormalization)
+
+            tf_model = tf.keras.models.load_model(
+                tf_model_path,
+                compile=False
+            )
+
+        except Exception as e:
+            raise RuntimeError(
+                "TensorFlow 模型載入失敗，可能是 Keras / TensorFlow 版本不相容。"
+                f"錯誤訊息：{str(e)}"
+            )
 
     # Keras 模型使用完整 42 個特徵，並轉成 float32
     model_input = input_df[feature_columns].astype("float32")
@@ -173,6 +255,10 @@ def predict_with_tensorflow_model(input_df):
 
     return result, probability_text
 
+
+# =========================
+# 預測結果文字說明
+# =========================
 def get_result_explanation(result):
     """
     根據預測結果給使用者簡單解釋。
@@ -188,6 +274,9 @@ def get_result_explanation(result):
         return "無法判斷預測結果。"
 
 
+# =========================
+# Flask Routes
+# =========================
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -208,6 +297,11 @@ def neural_network():
     return render_template("neural_network.html")
 
 
+@app.route("/diagnostics")
+def diagnostics():
+    return render_template("diagnostics.html")
+
+
 @app.route("/predict", methods=["GET", "POST"])
 def predict():
     if request.method == "POST":
@@ -218,7 +312,10 @@ def predict():
             input_df = build_input_dataframe(request.form)
 
             if model_group == "sklearn":
-                result, probability_text = predict_with_sklearn_model(model_type, input_df)
+                result, probability_text = predict_with_sklearn_model(
+                    model_type,
+                    input_df
+                )
 
                 explanation = get_result_explanation(result)
                 selected_model_name = model_display_names.get(model_type, model_type)
@@ -235,7 +332,7 @@ def predict():
                 result, probability_text = predict_with_tensorflow_model(input_df)
 
                 explanation = get_result_explanation(result)
-                selected_model_name = "Keras / TensorFlow MLP"
+                selected_model_name = model_display_names.get("nn", "Keras / TensorFlow MLP")
 
                 return render_template(
                     "predict.html",
@@ -244,6 +341,9 @@ def predict():
                     probability_text=probability_text,
                     selected_model_name=selected_model_name,
                 )
+
+            else:
+                raise ValueError("未選擇有效的模型類型。")
 
         except Exception as e:
             return render_template(
@@ -257,5 +357,8 @@ def predict():
     return render_template("predict.html")
 
 
+# =========================
+# Run Flask
+# =========================
 if __name__ == "__main__":
     app.run(debug=True)
