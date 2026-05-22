@@ -37,7 +37,7 @@ data/train.csv
 - 使用者互動式預測頁面
 - 多模型選擇功能
 - Flask 後端模型即時預測功能
-- 分歧樣本報告下載功能
+- 多數決預測下載功能
 
 ---
 
@@ -130,7 +130,7 @@ IRRIGATION_WEB/
 │   │       └── sklearn_residual_roc.png
 │   │
 │   └── files/
-│       └── prediction_mismatches_report.csv
+│       └── final_predictions_voting.csv
 │
 
 

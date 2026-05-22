@@ -25,7 +25,7 @@
         <section class="page-title">
             <h1>模型診斷與多數決預測</h1>
             <p>
-                本頁針對測試資料所進行的模型診斷與最終預測整合。
+                本頁展示測試資料的模型診斷與最終預測整合流程。
                 此部分主要目的不是重新訓練模型，而是將 test.csv 整理成模型可使用的格式後，
                 分別輸入多個模型進行預測，並透過模型間的一致性比較與多數決方式產生最終預測結果。
             </p>
@@ -138,9 +138,9 @@
         <section class="section">
             <h2>模型一致性與多數決預測</h2>
             <p>
-                在最終 test.csv 預測階段，第五位同學將不同模型的預測結果放在同一份資料表中比較。
+                在最終 test.csv 預測階段，會將不同模型的預測結果放在同一份資料表中比較。
                 若同一筆資料中所有模型的預測結果相同，代表模型間具有高度共識；
-                若模型之間出現不同答案，則該筆資料會被視為分歧樣本。
+                若模型之間出現不同答案，則表示該筆資料可能較接近分類邊界，因此需要透過多數決方式整合結果。
             </p>
 
             <div class="cards">
@@ -153,11 +153,10 @@
                 </div>
 
                 <div class="card">
-                    <h3>提交預測答案</h3>
+                    <h3>分歧樣本判斷</h3>
                     <p>
-                        將模型預測結果不一致的資料列篩選出來，
-                        並輸出成 <strong>prediction_mismatches_report.csv</strong>，
-                        方便觀察哪些樣本容易造成模型判斷分歧。
+                        若不同模型對同一筆資料出現不同預測，表示該筆資料可能較難分類。
+                        這些分歧資料會進一步透過多數決方式整合，避免只依賴單一模型的判斷。
                     </p>
                 </div>
 
@@ -172,28 +171,27 @@
         </section>
 
         <section class="section">
-            <h2>提交預測答案</h2>
+            <h2>最終多數決預測結果</h2>
             <p>
-                第五位同學另外輸出 <strong>prediction_mismatches_report.csv</strong>，
-                用來記錄不同模型預測結果不一致的樣本。
-                此檔案包含樣本 id、Logistic Regression、Random Forest、XGBoost、
-                HistGradientBoosting、TensorFlow MLP 的預測結果，
-                以及該筆資料中出現的不重複答案數量。
+                最後輸出 <strong>final_predictions_voting.csv</strong>，
+                作為 test.csv 的最終提交答案。此檔案是將多個模型的預測結果進行比較後，
+                透過多數決方式決定每一筆測試資料的最終灌溉需求類別。
             </p>
             <p>
-                透過這份報告，可以觀察哪些測試資料較容易讓模型產生不同判斷。
-                這些樣本通常可能位於分類邊界附近，因此最後會再透過多數決方式產生較穩定的最終預測結果。
+                檔案中包含 <strong>id</strong> 與 <strong>Predicted_Irrigation_Need</strong> 兩個欄位。
+                其中 id 對應測試資料的樣本編號，Predicted_Irrigation_Need 則為多數決後得到的最終預測結果，
+                包含 Low、Medium、High 三種灌溉需求等級。
             </p>
 
-            <a class="btn" href="{{ url_for('static', filename='files/prediction_mismatches_report.csv') }}" download>
-                下載提交預測答案
+            <a class="btn" href="{{ url_for('static', filename='files/final_predictions_voting.csv') }}" download>
+                下載最終多數決預測結果
             </a>
         </section>
 
         <section class="section">
             <h2>小結</h2>
             <p>
-                第五位同學的工作補足了最終預測階段。透過 test.csv 前處理、多模型預測、
+                此部分補足了最終預測階段。透過 test.csv 前處理、多模型預測、
                 預測一致性比較與多數決整合，專題不只完成單一模型的預測功能，
                 也進一步比較多個模型對同一批資料的判斷是否穩定。
                 最終輸出的 <strong>final_predictions_voting.csv</strong> 可作為整合多模型結果後的最終答案。
